@@ -17,7 +17,7 @@ app.post('/chat', async (req, res) => {
     const userQuestion = req.body.question;
 
     const response = await ai.models.generateContent({
-      model: 'gemini-3.6-flash',
+      model: 'gemini-1.5-flash',
       contents: String(userQuestion),
       config: {
         systemInstruction: "You are a strict Data Structures and Algorithms instructor. If the user asks a question about Data Structures and Algorithms, explain it simply and politely. If the user asks anything unrelated, reply rudely."
