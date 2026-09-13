@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DSA Instructor</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, sans-serif; }
+    body { background: #0f172a; color: #f8fafc; display: flex; justify-content: center; align-items: center; height: 100vh; }
+    .chat-container { width: 100%; max-width: 550px; height: 85vh; background: #1e293b; border-radius: 12px; display: flex; flex-direction: column; box-shadow: 0 10px 25px rgba(0,0,0,0.5); overflow: hidden; }
+    .header { padding: 16px; background: #0b1329; font-weight: bold; text-align: center; border-bottom: 1px solid #334155; }
+    .chat-box { flex: 1; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+    .message { max-width: 80%; padding: 12px 16px; border-radius: 10px; line-height: 1.4; white-space: pre-wrap; font-size: 0.95rem; }
+    .user { align-self: flex-end; background: #2563eb; color: white; }
+    .bot { align-self: flex-start; background: #334155; color: #f1f5f9; }
+    .input-box { display: flex; padding: 12px; background: #0b1329; gap: 8px; }
+    input { flex: 1; padding: 12px; border-radius: 8px; border: 1px solid #334155; background: #1e293b; color: white; outline: none; }
+    input:focus { border-color: #2563eb; }
+    button { padding: 12px 20px; border: none; background: #2563eb; color: white; border-radius: 8px; font-weight: 600; cursor: pointer; }
+    button:hover { background: #1d4ed8; }
+  </style>
+</head>
+<body>
+
+  <div class="chat-container">
+    <div class="header">🧑‍🏫 DSA Instructor</div>
+    <div class="chat-box" id="chatBox">
+      <div class="message bot">Ask me a Data Structures and Algorithms question. Don't waste my time with anything else.</div>
+    </div>
+    <form class="input-box" id="chatForm">
+      <input type="text" id="userInput" placeholder="Ask about binary search, sorting, trees..." autocomplete="off" required />
+      <button type="submit" id="sendBtn">Send</button>
+    </form>
+  </div>
+
+  <script>
+    const form = document.getElementById('chatForm');
+    const input = document.getElementById('userInput');
+    const chatBox = document.getElementById('chatBox');
+    const sendBtn = document.getElementById('sendBtn');
+
+    function appendMsg(text, type) {
+      const msg = document.createElement('div');
+      msg.className = `message ${type}`;
+      msg.textContent = text;
+      chatBox.appendChild(msg);
+      chatBox.scrollTop = chatBox.scrollHeight;
+      return msg;
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const question = input.value.trim();
+      if (!question) return;
+
+      appendMsg(question, 'user');
+      input.value = '';
+      sendBtn.disabled = true;
+
+      const placeholder = appendMsg('Thinking...', 'bot');
+
+      try {
+        const response = await fetch('/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ question })
+        });
+
+        const data = await response.json();
+        placeholder.textContent = data.answer || ('Error: ' + data.error);
+      } catch (err) {
+        placeholder.textContent = 'Cannot reach backend server. Check your terminal.';
+      } finally {
+        sendBtn.disabled = false;
+        input.focus();
+      }
+    });
+  </script>
+</body>
+</html>
