@@ -18,7 +18,7 @@ export default async function handler(req, res) {
     }
 
     const response = await ai.models.generateContent({
-      model: 'gemini-1.5-flash',
+      model: 'gemini-2.5-flash',
       contents: question,
       config: {
         systemInstruction: "You are a strict DSA Instructor. Only answer Data Structures and Algorithms questions. If a question is not about DSA, decline to answer."
